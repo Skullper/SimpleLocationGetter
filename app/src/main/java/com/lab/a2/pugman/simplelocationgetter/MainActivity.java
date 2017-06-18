@@ -1,9 +1,11 @@
 package com.lab.a2.pugman.simplelocationgetter;
 
 import android.location.Location;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import pugman.com.simplelocationgetter.SimpleLocationGetter;
 
 public class MainActivity extends AppCompatActivity implements SimpleLocationGetter.OnLocationGetListener{
 
