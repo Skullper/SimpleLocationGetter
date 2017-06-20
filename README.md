@@ -28,7 +28,7 @@ SimpleLocationGetter getter = new SimpleLocationGetter(this, this);
 getter.getLastLocation();
 ```
 
-Oh, and don't forgot to implement this awesome well written listener to class where the previous strings declared:
+Oh, and don't forget to implement this awesome well written listener to class where the previous strings are declared:
 
 ```java
 implements SimpleLocationGetter.OnLocationGetListener
