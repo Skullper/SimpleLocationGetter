@@ -4,7 +4,7 @@ apply plugin: 'com.novoda.bintray-release'
 publish {
     groupId = 'com.github.skullper'
     artifactId = 'locationgetter'
-    publishVersion = '0.1'
+    publishVersion = '0.1.1'
     desc = 'Library that helps to get last user location'
     licences = ['Apache-2.0']
     uploadName='SimpleLocationGetter'
@@ -19,7 +19,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "0.1.1"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
