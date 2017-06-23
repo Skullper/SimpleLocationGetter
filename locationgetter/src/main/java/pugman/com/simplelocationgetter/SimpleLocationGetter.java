@@ -2,11 +2,14 @@ package pugman.com.simplelocationgetter;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -26,6 +29,7 @@ public class SimpleLocationGetter{
 	private final Activity                    mActivity;
 	private       FusedLocationProviderClient mFusedLocationClient;
 	private       OnLocationGetListener       mListener;
+	private       Dialog                      mErrorDialog;
 
 	public interface OnLocationGetListener{
 		void onLocationReady(Location location);
@@ -46,26 +50,46 @@ public class SimpleLocationGetter{
 	@SuppressWarnings("MissingPermission")
 	public void getLastLocation(){
 		if(checkLocationPermissions()) {
-			if(mListener != null) {
-				mFusedLocationClient.getLastLocation().addOnCompleteListener(mActivity, new OnCompleteListener<Location>(){
-					@Override
-					public void onComplete(@NonNull Task<Location> task){
-						if(task.isSuccessful() && task.getResult() != null) {
-							Location lastLocation = task.getResult();
-							mListener.onLocationReady(lastLocation);
-						} else{
-							mListener.onError("No location exists. Check if GPS enabled");
+			if(checkPlayServices()) {
+				if(mListener != null) {
+					mFusedLocationClient.getLastLocation().addOnCompleteListener(mActivity, new OnCompleteListener<Location>(){
+						@Override
+						public void onComplete(@NonNull Task<Location> task){
+							if(task.isSuccessful() && task.getResult() != null) {
+								Location lastLocation = task.getResult();
+								mListener.onLocationReady(lastLocation);
+							} else{
+								mListener.onError("No location exists. Check if GPS enabled");
+							}
 						}
-					}
-				});
+					});
+				} else
+					Log.w(TAG, "Location listener not attached");
 			} else
-				Log.w(TAG, "Location listener not attached");
-		} else Log.e(TAG, "You should grant ACCESS_COARSE_LOCATION and ACCESS_FINE_LOCATION first");
+				Log.w(TAG, "Google play services not installed or not enabled. Or version older than needed");
+		} else
+			Log.e(TAG, "You should grant ACCESS_COARSE_LOCATION and ACCESS_FINE_LOCATION first");
 	}
 
 	private boolean checkLocationPermissions(){
 		boolean coarseEnabled = mActivity.checkCallingOrSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 		boolean fineEnabled = mActivity.checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 		return coarseEnabled && fineEnabled;
+	}
+
+	private boolean checkPlayServices(){
+		GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+		int resultCode = googleApiAvailability.isGooglePlayServicesAvailable(mActivity);
+		if(resultCode != ConnectionResult.SUCCESS) {
+			if(googleApiAvailability.isUserResolvableError(resultCode)) {
+				if(mErrorDialog == null) {
+					mErrorDialog = googleApiAvailability.getErrorDialog(mActivity, resultCode, 2404);
+					mErrorDialog.setCancelable(false);
+				}
+				if(!mErrorDialog.isShowing())
+					mErrorDialog.show();
+			}
+		}
+		return resultCode == ConnectionResult.SUCCESS;
 	}
 }
