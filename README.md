@@ -17,7 +17,7 @@ allprojects {
     }
 }
 //app(module) build.gradle
-compile 'com.github.skullper:locationgetter:0.1@arr'
+compile 'com.github.skullper:locationgetter:0.1@aar'
 compile 'com.google.android.gms:play-services-location:11.0.1'
 ```
 
